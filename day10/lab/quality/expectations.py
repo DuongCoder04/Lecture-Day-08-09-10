@@ -112,5 +112,30 @@ def run_expectations(cleaned_rows: List[Dict[str, Any]]) -> Tuple[List[Expectati
         )
     )
 
+    # E7: không còn exported_at chứa '/' (non-standard format sau normalize)
+    bad_slash = [r for r in cleaned_rows if "/" in (r.get("exported_at") or "")]
+    ok7 = len(bad_slash) == 0
+    results.append(
+        ExpectationResult(
+            "exported_at_no_slash",
+            ok7,
+            "halt",
+            f"non_standard_exported_at={len(bad_slash)}",
+        )
+    )
+
+    # E8: exported_at phải đúng định dạng ISO (YYYY-MM-DDTHH:MM:SS)
+    iso_exp = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
+    bad_export = [r for r in cleaned_rows if not iso_exp.match((r.get("exported_at") or "").strip())]
+    ok8 = len(bad_export) == 0
+    results.append(
+        ExpectationResult(
+            "exported_at_iso_format",
+            ok8,
+            "warn",
+            f"non_iso_exported_at={len(bad_export)}",
+        )
+    )
+
     halt = any(not r.passed and r.severity == "halt" for r in results)
     return results, halt

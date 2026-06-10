@@ -291,3 +291,79 @@ Freshness / version → Volume & errors → Schema & contract → Lineage / run_
 - Lab Day 09 (orchestration): [`../../day09/lab/README.md`](../../day09/lab/README.md)
 - Great Expectations (tuỳ chọn nâng cao): https://docs.greatexpectations.io/
 - ChromaDB: https://docs.trychroma.com/
+
+---
+
+## Our Work
+
+### Problem
+
+`python etl_pipeline.py run` **HALT** ngay lần chạy đầu:
+```
+expectation[hr_leave_no_stale_10d_annual] FAIL (halt) :: violations=2
+```
+
+**Root cause:** Docstring trong `transform/cleaning_rules.py` tuyên bố 10 cleaning rules, nhưng code thật chỉ implement 6 rules đầu — rules 7–10 bị thiếu. Hậu quả: 9 `hr_leave_policy` records (trong đó 2 chứa nội dung cũ "10 ngày phép năm") lọt vào cleaned data, làm expectation E6 fail.
+
+### What we did
+
+#### Sprint 1 — Phân tích
+- Raw CSV: 247 records, 5 doc_id hợp lệ (`policy_refund_v4`, `sla_p1_2026`, `it_helpdesk_faq`, `hr_leave_policy`, `access_control_sop`) + 109 `invalid_doc_*` auto-quarantine.
+- Xác định `cleaning_rules.py` thiếu rule cho: stale HR content, normalize exported_at, unclear content prefix, whitespace-only text.
+
+#### Sprint 2 — Sửa pipeline
+
+**`transform/cleaning_rules.py`** — thêm 7 rules:
+
+| Rule | Loại | Mô tả | Impact |
+|------|------|-------|--------|
+| 7 | Baseline | Quarantine `hr_leave_policy` "10 ngày phép năm" stale content | +2 quarantine (records lọt trước đây) |
+| 8 | Baseline | Normalize `exported_at`: thay `/` bằng `-` | 16 records được chuẩn hoá |
+| 9 | Baseline | Quarantine "Nội dung không rõ ràng:" hoặc "!!!" | +3 quarantine |
+| 10 | Baseline | Whitespace-only chunk_text (tách khỏi missing) | 0 (đã bắt trước đây) |
+| **11** | **New** | Quarantine exported_at chứa '/' — non-standard timestamp | +1 quarantine |
+| **12** | **New** | Quarantine ALL doc_types với `effective_date < 2026` | +57 quarantine |
+| **13** | **New** | Quarantine ≥3 câu giống hệt nhau trong chunk_text | 0 (safety net) |
+
+> **Rule 11 thay đổi:** Ban đầu quarantine "12 ngày phép năm" (conflict version) — nhưng row 247 ("12 ngày phép năm theo chính sách 2026") là policy 2026 hợp lệ cần trong cleaned để trả lời gq_d10_09. Rule 11 được thay bằng non_standard_timestamp (kiểm tra `/` trong raw exported_at), tránh quarantine nhầm dữ liệu grading.
+
+**`quality/expectations.py`** — thêm 2 expectations:
+
+| Expectation | Severity | Mô tả |
+|-------------|----------|-------|
+| E7: `exported_at_no_slash` | halt | Không còn exported_at chứa '/' sau normalize |
+| E8: `exported_at_iso_format` | warn | exported_at đúng format YYYY-MM-DDTHH:MM:SS |
+
+**Kết quả:** `python etl_pipeline.py run` → **exit 0**, tất cả 8 expectations PASS.
+
+#### Sprint 3 — Inject corruption
+- Tạo `policy_export_injected.csv` (247 + 6 records): 5 dirty (mỗi record test 1 rule mới) + 1 valid.
+- 5/5 dirty bị quarantine đúng rule: `stale_hr_policy_content`, `non_standard_timestamp`, `outdated_policy`, `unclear_content`, `repetitive_chunk_text`.
+- 1 valid record pass vào cleaned; "12 ngày phép năm" record được giữ lại cho grading.
+- `cleaned_records: 28 → 29`, `quarantine_records: 219 → 224`.
+
+#### Sprint 4 — Docs & Monitoring
+- Docs hoàn chỉnh: `pipeline_architecture.md` (sơ đồ + ranh giới), `data_contract.md` (source map + schema), `runbook.md` (5 mục symptom→prevention), `quality_report.md`.
+- ChromaDB collection `day10_kb`: 28 vectors (baseline), 29 (inject). Idempotency confirmed: rerun 2 lần, collection không phình.
+- Freshness: FAIL (expected — sample data có exported_at April 2026, pipeline chạy June 2026).
+- **Grading (10 câu):** 10/10 PASS (với `--top-k 10`, phù hợp cho KB 28 vectors). `contains_expected=true`, `top1_doc_matches=true`, `hits_forbidden=false` cho tất cả câu hỏi.
+
+### Baseline vs After
+
+| Metric | Baseline (ước lượng) | After |
+|--------|---------------------|-------|
+| Pipeline exit code | 2 (HALT) | 0 (OK) |
+| cleaned_records | ~37 (với records lỗi) | 28 |
+| quarantine_records | ~210 | 219 |
+| Expectation failures | 1 (E6: hr_leave_no_stale_10d_annual) | 0 |
+| Embed | N/A (chromadb không cài) | 28 vectors, idempotent |
+
+### How to run
+
+```bash
+cd /home/duong/VinUni-Lab/Lecture-Day-08-09-10/day10/lab
+python etl_pipeline.py run                    # Baseline (247 raw → 28 cleaned)
+python etl_pipeline.py run --raw data/raw/policy_export_injected.csv  # Inject test (253 raw → 29 cleaned)
+python etl_pipeline.py freshness --manifest artifacts/manifests/manifest_final-v2.json
+python grading_run.py                         # Verify 10 grading questions all PASS
+```
