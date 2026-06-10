@@ -7,7 +7,7 @@ Ví dụ:
   python instructor_quick_check.py --grading artifacts/eval/grading_run.jsonl
 
 Kiểm tra:
-  - grading_run.jsonl: mỗi dòng JSON hợp lệ, đủ khóa, câu chấm chuẩn (gq_d10_01..03)
+  - grading_run.jsonl: mỗi dòng JSON hợp lệ, đủ khóa, câu chấm chuẩn (gq_d10_01..10)
   - (tuỳ chọn) --manifest: manifest có run_id, đếm record, cleaned path
 """
 
@@ -40,10 +40,10 @@ def check_grading_jsonl(path: Path) -> Tuple[int, List[str]]:
         return 1, [f"MISSING: {path}"]
 
     rows = _load_jsonl(path)
-    if len(rows) < 3:
-        msgs.append(f"WARN: expected >=3 grading rows, got {len(rows)}")
+    if len(rows) < 10:
+        msgs.append(f"WARN: expected >=10 grading rows, got {len(rows)}")
 
-    required_ids = {"gq_d10_01", "gq_d10_02", "gq_d10_03"}
+    required_ids = {f"gq_d10_{i:02d}" for i in range(1, 11)}
     seen = {r.get("id") for r in rows if r.get("id")}
     missing = required_ids - seen
     if missing:
@@ -58,25 +58,29 @@ def check_grading_jsonl(path: Path) -> Tuple[int, List[str]]:
                 msgs.append(f"FAIL: {gid} missing key {k}")
         if r.get("hits_forbidden") is True:
             msgs.append(f"NOTE: {gid} hits_forbidden=true (có thể inject / index bẩn / chưa prune)")
-        want = r.get("top1_doc_matches")
-        if want is not None and r.get("id") == "gq_d10_03" and want is not True:
-            msgs.append(f"WARN: gq_d10_03 top1_doc_matches expected true, got {want!r}")
 
-    def _merit_line(gid: str, label: str) -> None:
+    def _check_line(gid: str, label: str, *, need_top1: bool = False) -> None:
         row = by_id.get(gid)
         if not row:
             return
         ok = bool(row.get("contains_expected")) and not bool(row.get("hits_forbidden"))
-        if gid == "gq_d10_03":
+        if need_top1:
             ok = ok and row.get("top1_doc_matches") is True
         sym = "OK" if ok else "FAIL"
-        msgs.append(f"MERIT_CHECK[{gid}] {sym} :: {label}")
+        msgs.append(f"GRADE_CHECK[{gid}] {sym} :: {label}")
 
-    _merit_line("gq_d10_01", "refund window + không forbidden trong top-k")
-    _merit_line("gq_d10_02", "P1 resolution SLA")
-    _merit_line("gq_d10_03", "HR 12 ngày + top1 doc_id + không 10 ngày stale trong top-k")
+    _check_line("gq_d10_01", "refund window 7 ngày + không forbidden 14 ngày")
+    _check_line("gq_d10_02", "refund exception hàng kỹ thuật số")
+    _check_line("gq_d10_03", "Finance 3-5 ngày xử lý", need_top1=True)
+    _check_line("gq_d10_04", "SLA P1 first response 15 phút")
+    _check_line("gq_d10_05", "SLA P1 resolution 4 giờ")
+    _check_line("gq_d10_06", "SLA P1 escalation 10 phút")
+    _check_line("gq_d10_07", "IT lockout 5 lần")
+    _check_line("gq_d10_08", "VPN 2 thiết bị")
+    _check_line("gq_d10_09", "HR 12 ngày phép năm + không stale 10 ngày", need_top1=True)
+    _check_line("gq_d10_10", "access control Level 4 IT Manager + CISO", need_top1=True)
 
-    merit_fail = any("MERIT_CHECK[" in m and "] FAIL ::" in m for m in msgs)
+    merit_fail = any("GRADE_CHECK[" in m and "] FAIL ::" in m for m in msgs)
     fails = [m for m in msgs if m.startswith("FAIL:")]
     return (1 if fails or merit_fail else 0), msgs
 

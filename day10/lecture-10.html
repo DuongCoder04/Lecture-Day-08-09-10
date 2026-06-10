@@ -525,55 +525,62 @@
         </div>
       </div>
       <div class="hero-visual">
-        <svg viewBox="0 0 560 400" style="width:100%;height:auto;display:block" aria-label="Database to pipeline to vector store to agent">
+        <svg viewBox="0 0 570 400" style="width:100%;height:auto;display:block" aria-label="Database to pipeline to vector store to agent">
           <defs>
-            <marker id="heroArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <marker id="heroArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
               <path d="M0,0 L10,5 L0,10 Z" fill="white"></path>
             </marker>
           </defs>
-          <rect x="0" y="0" width="560" height="400" rx="26" fill="rgba(255,255,255,0.04)"></rect>
+          <rect x="0" y="0" width="570" height="400" rx="26" fill="rgba(255,255,255,0.04)"></rect>
           <g stroke="rgba(255,255,255,0.08)">
-            <path d="M0 80 H560"></path><path d="M0 160 H560"></path><path d="M0 240 H560"></path><path d="M0 320 H560"></path>
+            <path d="M0 80 H570"></path><path d="M0 160 H570"></path><path d="M0 240 H570"></path><path d="M0 320 H570"></path>
             <path d="M80 0 V400"></path><path d="M160 0 V400"></path><path d="M240 0 V400"></path><path d="M320 0 V400"></path><path d="M400 0 V400"></path><path d="M480 0 V400"></path>
           </g>
-          <ellipse cx="88" cy="158" rx="40" ry="14" fill="#ecf3ff" stroke="white" stroke-width="3"></ellipse>
-          <rect x="48" y="158" width="80" height="70" fill="#ecf3ff" stroke="white" stroke-width="3"></rect>
-          <ellipse cx="88" cy="228" rx="40" ry="14" fill="#ecf3ff" stroke="white" stroke-width="3"></ellipse>
-          <text x="88" y="270" fill="white" text-anchor="middle" font-size="22" font-weight="700">Company data</text>
+          
+          <!-- Company Data -->
+          <ellipse cx="70" cy="158" rx="40" ry="14" fill="#ecf3ff" stroke="white" stroke-width="3"></ellipse>
+          <rect x="30" y="158" width="80" height="70" fill="#ecf3ff" stroke="white" stroke-width="3"></rect>
+          <ellipse cx="70" cy="228" rx="40" ry="14" fill="#ecf3ff" stroke="white" stroke-width="3"></ellipse>
+          <text x="70" y="270" fill="white" text-anchor="middle" font-size="22" font-weight="700">Company data</text>
 
-          <rect x="180" y="112" width="140" height="112" rx="20" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.42)" stroke-width="2"></rect>
-          <text x="250" y="150" fill="white" text-anchor="middle" font-size="28" font-weight="800">Pipeline</text>
-          <text x="250" y="182" fill="rgba(255,255,255,0.84)" text-anchor="middle" font-size="16" font-weight="600">ingest · clean · validate</text>
-          <text x="250" y="208" fill="rgba(255,255,255,0.84)" text-anchor="middle" font-size="16" font-weight="600">version · monitor</text>
-          <rect x="205" y="246" width="90" height="28" rx="14" fill="#f59e0b"></rect>
-          <text x="250" y="265" fill="#1d1d1f" text-anchor="middle" font-size="14" font-weight="900">Freshness</text>
+          <!-- Pipeline -->
+          <rect x="140" y="112" width="180" height="112" rx="20" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.42)" stroke-width="2"></rect>
+          <text x="230" y="150" fill="white" text-anchor="middle" font-size="28" font-weight="800">Pipeline</text>
+          <text x="230" y="182" fill="rgba(255,255,255,0.84)" text-anchor="middle" font-size="16" font-weight="600">ingest · clean · validate</text>
+          <text x="230" y="208" fill="rgba(255,255,255,0.84)" text-anchor="middle" font-size="16" font-weight="600">version · monitor</text>
+          <rect x="185" y="246" width="90" height="28" rx="14" fill="#f59e0b"></rect>
+          <text x="230" y="265" fill="#1d1d1f" text-anchor="middle" font-size="14" font-weight="900">Freshness</text>
 
-          <rect x="360" y="120" width="108" height="108" rx="22" fill="#eef3ff" stroke="white" stroke-width="3"></rect>
+          <!-- Vector Store -->
+          <rect x="350" y="120" width="108" height="108" rx="22" fill="#eef3ff" stroke="white" stroke-width="3"></rect>
           <g fill="#2e548a" stroke="#2e548a" stroke-width="2">
-            <circle cx="390" cy="148" r="4"></circle><circle cx="414" cy="172" r="4"></circle><circle cx="438" cy="148" r="4"></circle>
-            <circle cx="390" cy="196" r="4"></circle><circle cx="414" cy="172" r="4"></circle><circle cx="438" cy="196" r="4"></circle>
-            <path d="M390 148 L414 172 L438 148"></path><path d="M390 196 L414 172 L438 196"></path>
+            <circle cx="380" cy="148" r="4"></circle><circle cx="404" cy="172" r="4"></circle><circle cx="428" cy="148" r="4"></circle>
+            <circle cx="380" cy="196" r="4"></circle><circle cx="404" cy="172" r="4"></circle><circle cx="428" cy="196" r="4"></circle>
+            <path d="M380 148 L404 172 L428 148"></path><path d="M380 196 L404 172 L428 196"></path>
           </g>
-          <text x="414" y="270" fill="white" text-anchor="middle" font-size="22" font-weight="700">Vector store</text>
+          <text x="404" y="270" fill="white" text-anchor="middle" font-size="22" font-weight="700">Vector store</text>
 
-          <rect x="480" y="122" width="70" height="82" rx="18" fill="#e7fbf8" stroke="white" stroke-width="3"></rect>
-          <line x1="515" y1="96" x2="515" y2="122" stroke="white" stroke-width="3"></line>
-          <circle cx="515" cy="88" r="7" fill="white"></circle>
-          <circle cx="500" cy="154" r="5" fill="#0d7377"></circle>
-          <circle cx="530" cy="154" r="5" fill="#0d7377"></circle>
-          <line x1="500" y1="178" x2="530" y2="178" stroke="#0d7377" stroke-width="4"></line>
-          <text x="515" y="270" fill="white" text-anchor="middle" font-size="22" font-weight="700">Agent</text>
+          <!-- Agent -->
+          <rect x="495" y="122" width="65" height="82" rx="18" fill="#e7fbf8" stroke="white" stroke-width="3"></rect>
+          <line x1="527" y1="96" x2="527" y2="122" stroke="white" stroke-width="3"></line>
+          <circle cx="527" cy="88" r="7" fill="white"></circle>
+          <circle cx="512" cy="154" r="5" fill="#0d7377"></circle>
+          <circle cx="542" cy="154" r="5" fill="#0d7377"></circle>
+          <line x1="512" y1="178" x2="542" y2="178" stroke="#0d7377" stroke-width="4"></line>
+          <text x="527" y="270" fill="white" text-anchor="middle" font-size="22" font-weight="700">Agent</text>
 
-          <path d="M128 172 C 150 172, 160 172, 180 172" stroke="white" stroke-width="6" fill="none" marker-end="url(#heroArr)"></path>
-          <path d="M320 172 C 338 172, 348 172, 360 172" stroke="white" stroke-width="6" fill="none" marker-end="url(#heroArr)"></path>
-          <path d="M468 172 C 474 172, 478 172, 480 172" stroke="white" stroke-width="6" fill="none" marker-end="url(#heroArr)"></path>
+          <!-- Arrows -->
+          <path d="M110 172 L 132 172" stroke="white" stroke-width="6" fill="none" marker-end="url(#heroArr)"></path>
+          <path d="M320 172 L 342 172" stroke="white" stroke-width="6" fill="none" marker-end="url(#heroArr)"></path>
+          <path d="M458 172 L 487 172" stroke="white" stroke-width="6" fill="none" marker-end="url(#heroArr)"></path>
 
-          <circle cx="294" cy="98" r="18" fill="#c83538"></circle>
-          <text x="294" y="104" fill="white" text-anchor="middle" font-size="20" font-weight="900">!</text>
-          <rect x="376" y="84" width="78" height="24" rx="12" fill="#fff4d8"></rect>
-          <text x="415" y="100" fill="#1d1d1f" text-anchor="middle" font-size="13" font-weight="900">Quality</text>
-          <rect x="470" y="286" width="86" height="24" rx="12" fill="#c83538"></rect>
-          <text x="513" y="302" fill="white" text-anchor="middle" font-size="13" font-weight="900">Observe</text>
+          <!-- Badges -->
+          <circle cx="315" cy="95" r="18" fill="#c83538"></circle>
+          <text x="315" y="101" fill="white" text-anchor="middle" font-size="20" font-weight="900">!</text>
+          <rect x="365" y="84" width="78" height="24" rx="12" fill="#fff4d8"></rect>
+          <text x="404" y="100" fill="#1d1d1f" text-anchor="middle" font-size="13" font-weight="900">Quality</text>
+          <rect x="475" y="286" width="86" height="24" rx="12" fill="#c83538"></rect>
+          <text x="518" y="302" fill="white" text-anchor="middle" font-size="13" font-weight="900">Observe</text>
         </svg>
       </div>
     </div>

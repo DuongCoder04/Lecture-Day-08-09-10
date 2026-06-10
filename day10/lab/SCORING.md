@@ -13,9 +13,9 @@
 
 | Hạng | Điều kiện tối thiểu (nhóm) |
 |------|-----------------------------|
-| **Pass** | Đạt đủ checklist mục 1–3 theo bảng điểm; grading JSONL hợp lệ; `gq_d10_01` và `gq_d10_02` đúng theo rubric dưới. |
-| **Merit** | Pass + `gq_d10_03` đạt đủ: `contains_expected=true`, `hits_forbidden=false`, `top1_doc_matches=true`; có chứng cứ eval cho `q_leave_version` (hoặc dòng tương đương trong grading JSONL) trong quality report / artifact. |
-| **Distinction** | Merit + **một trong các bằng chứng “vượt baseline”** có liên kết rõ (link log/CSV/commit): (a) GE hoặc pydantic validate thật trên schema cleaned; (b) freshness đo **2 boundary** (ingest + publish) có log; (c) eval mở rộng (LLM-judge hoặc bộ slice ≥5 câu) có mô tả phương pháp + 1 ví dụ fail/pass; (d) rule versioning **không hard-code** một ngày cố định (vd đọc cutoff từ contract/env) + chứng minh inject làm đổi quyết định clean. |
+| **Pass** | Đạt đủ checklist mục 1–3 theo bảng điểm; grading JSONL hợp lệ; `gq_d10_01` đến `gq_d10_05` đúng: `contains_expected=true`, `hits_forbidden=false`. |
+| **Merit** | Pass + `gq_d10_06` đến `gq_d10_08` đạt đủ; có chứng cứ eval before/after trong quality report / artifact. |
+| **Distinction** | Merit + `gq_d10_09` và `gq_d10_10` đạt đủ (yêu cầu sửa pipeline: HR version conflict + access_control_sop allowlist) + **một trong các bằng chứng “vượt baseline”** có liên kết rõ (link log/CSV/commit): (a) GE hoặc pydantic validate thật trên schema cleaned; (b) freshness đo **2 boundary** (ingest + publish) có log; (c) eval mở rộng (LLM-judge hoặc bộ slice ≥5 câu) có mô tả phương pháp + 1 ví dụ fail/pass; (d) rule versioning **không hard-code** một ngày cố định (vd đọc cutoff từ contract/env) + chứng minh inject làm đổi quyết định clean. |
 
 **Chống trivial (trừ điểm mục 1 hoặc 3, tối đa −4 mỗi nhóm — quyết định GV):**
 
@@ -75,17 +75,18 @@
 
 ### 4. Grading JSONL (tùy lớp — mặc định 0–12 điểm trừ vào mục 3 hoặc tách riêng)
 
-Nếu dùng `grading_questions.json` (3 câu):
+Nếu dùng `grading_questions.json` (10 câu):
 
 | Tiêu chí | Điểm |
 |-----------|------|
-| `artifacts/eval/grading_run.jsonl` tồn tại, **đúng 3 dòng** `gq_d10_01` … `gq_d10_03`, mỗi dòng JSON hợp lệ | 2 |
-| `gq_d10_01`: `contains_expected=true` và `hits_forbidden=false` | 4 |
-| `gq_d10_02`: `contains_expected=true` | 3 |
-| `gq_d10_03`: `contains_expected=true`, `hits_forbidden=false`, `top1_doc_matches=true` | 3 |
+| `artifacts/eval/grading_run.jsonl` tồn tại, **đúng 10 dòng** `gq_d10_01` … `gq_d10_10`, mỗi dòng JSON hợp lệ | 2 |
+| `gq_d10_01`–`gq_d10_05` (refund + SLA cơ bản): tất cả `contains_expected=true`, `hits_forbidden=false` | 4 |
+| `gq_d10_06`–`gq_d10_08` (escalation, FAQ nâng cao): `contains_expected=true` | 3 |
+| `gq_d10_09`–`gq_d10_10` (HR version + access control — yêu cầu sửa pipeline): `contains_expected=true`, `hits_forbidden=false`, `top1_doc_matches=true` | 3 |
 
 > Nếu không dùng grading: phân bổ 12 điểm vào mục 3 (quality evidence) theo tỷ lệ GV.  
-> `top1_doc_matches` do `grading_run.py` ghi khi câu hỏi có `expect_top1_doc_id` trong JSON.
+> `top1_doc_matches` do `grading_run.py` ghi khi câu hỏi có `expect_top1_doc_id` trong JSON.  
+> `gq_d10_09` và `gq_d10_10` khó hơn vì yêu cầu sửa pipeline (thêm cleaning rule cho HR stale + thêm `access_control_sop` vào allowlist).
 
 ---
 
